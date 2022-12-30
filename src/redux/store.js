@@ -2,9 +2,15 @@ import keplerGlReducer from 'kepler.gl/reducers'
 import {createStore, combineReducers, applyMiddleware} from 'redux'
 import {taskMiddleware} from 'react-palm/tasks'
 
+const keplerReducer = keplerGlReducer.initialState({
+  uiState: {
+    //activeSidePanel: null, // hide side panel when first init/open app
+    currentModal: null // dont show import data modal when first init/open app
+  }
+})
+
 const reducer = combineReducers({
-  // <-- mount kepler.gl reducer in your app
-  keplerGl: keplerGlReducer,
+  keplerGl: keplerReducer,
 })
 
 // create store
