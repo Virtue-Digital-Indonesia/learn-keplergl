@@ -1,8 +1,8 @@
 import React from 'react'
 import {PanelHeaderFactory} from 'kepler.gl/components'
 
-function CustomPanelHeaderFactory(...args) {
-  const PanelHeader = PanelHeaderFactory(...args)
+function CustomPanelHeaderFactory(...deps) {
+  const PanelHeader = PanelHeaderFactory(...deps)
 
   PanelHeader.defaultProps = {
     ...PanelHeader.defaultProps,
