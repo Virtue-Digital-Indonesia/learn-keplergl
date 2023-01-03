@@ -1,21 +1,26 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import theme from '../utils/theme'
 import CustomToolbar from '../components/CustomToolbar'
-import { injectComponents, PanelHeaderFactory } from 'kepler.gl/dist/components'
-
+import { injectComponents, CustomPanelsFactory, PanelToggleFactory, SidePanelFactory, PanelHeaderFactory } from 'kepler.gl/components'
+import CustomPanelToggleFactory from '../customFactory/CustomToggleFactory'
+import CustomizePanelsFactory from '../customFactory/CustomizePanelsFactory'
+import CustomSidePanelFactory from '../customFactory/CustomSidePanelFactory'
+import CustomPanelHeaderFactory from '../customFactory/CustomPanelHeader'
 
 /**
  * learn more replace custom component https://docs.kepler.gl/docs/api-reference/advanced-usages/replace-ui-component
  */
-const CustomPanelHeader = () => (<div style={{ color: 'white', padding: '10px' }}>Custom Header</div>)
-const CustomPanelHeaderFactory = () => CustomPanelHeader
-
 // Inject custom component into Kepler.gl,
 const KeplerGl = injectComponents([
-  [PanelHeaderFactory, CustomPanelHeaderFactory]
+  [SidePanelFactory, CustomSidePanelFactory],
+  [PanelHeaderFactory, CustomPanelHeaderFactory],
+  [CustomPanelsFactory, CustomizePanelsFactory],
+  [PanelToggleFactory, CustomPanelToggleFactory],
 ])
 
 const Home = () => {
+
   return (
     <>
       <CustomToolbar />
@@ -25,6 +30,9 @@ const Home = () => {
         width={window.innerWidth}
         height={window.innerHeight}
         theme={theme}
+        appName='Logo'
+        appWebsite='https://github.com'
+        logoComponent={false}
       />
     </>
   )
