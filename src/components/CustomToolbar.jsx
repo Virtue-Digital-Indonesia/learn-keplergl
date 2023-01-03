@@ -15,8 +15,6 @@ const MapContainer = ({ keplerGlDispatch }) => {
     return data
   })
 
-  console.log({ dataCovid })
-
   return (
     <div style={{ marginBottom: '20px' }}>
       <button style={{ marginRight: '8px'}} onClick={() => keplerGlDispatch(toggleSplitMap())}>split map</button>
