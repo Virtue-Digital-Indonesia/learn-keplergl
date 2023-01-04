@@ -11,8 +11,10 @@ const LoadViaURL = () => {
 
   const fetchData = async (url) => {
     if(!url) return
+    let controller = new AbortController()
     const response = await fetch(url, {
-      method: 'GET'
+      method: 'GET',
+      signal: controller.signal
     })
     const result = await response.json()
 
@@ -30,7 +32,10 @@ const LoadViaURL = () => {
       },
       config: {}
     }))
+
+    controller.abort()
   }
+
   return(
     <div>
       <input type='text' placeholder='https://url' onChange={(event) => setLoadUrl(event.target.value)}/>
@@ -41,7 +46,7 @@ const LoadViaURL = () => {
 
 const LoadViaDB = () => {
   const dispatch = useDispatch()
-  
+
   return(
     <div>
       <button onClick={() => dispatch(addDataToMap({
