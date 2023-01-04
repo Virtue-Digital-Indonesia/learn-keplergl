@@ -19,13 +19,14 @@ const LoadViaURL = () => {
   const [type, setType] = useState('geojson')
 
   const fetchData = async (url) => {
-    if(!url) return
+    if(!url || !type || !label) return
     let controller = new AbortController()
     const response = await fetch(url, {
       method: 'GET',
       signal: controller.signal
     })
-    const result = await response.json()
+
+    const result = type === 'csv' ? await response.text() : await response.json()
 
     const params = {
       datasets: {
@@ -33,7 +34,7 @@ const LoadViaURL = () => {
           label,
           id: label,
         },
-        data: getProcessor(type, result),
+        data: getProcessor(type || 'geojson', result),
       }
     }
     dispatch(addDataToMap(params))
@@ -53,7 +54,7 @@ const LoadViaURL = () => {
       <div style={{ marginBottom: '8px' }}>
         <select onChange={event => setType(event.target.value)}>
           <option value='geojson'>geojson</option>
-          {/* <option value='csv'>csv</option> */}
+          <option value='csv'>csv</option>
           <option value='row'>row</option>
         </select>
       </div>
