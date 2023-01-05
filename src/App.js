@@ -6,16 +6,15 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import { StyledEngineProvider } from '@mui/material'
+import { StyledEngineProvider } from '@mui/material/styles'
 
 function App() {
   return (
-    <Provider store={store}>
-      <StyledEngineProvider injectFirst>
+    <StyledEngineProvider injectFirst>
+      <Provider store={store}>
         <Home />
-      </StyledEngineProvider>
-      
-    </Provider>
+      </Provider>
+    </StyledEngineProvider>
   )
 }
 
