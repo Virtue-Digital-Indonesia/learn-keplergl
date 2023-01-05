@@ -7,7 +7,8 @@ const CustomModalTab = (...deps) => {
       backgroundColor: '#F0F0F0',
       borderRadius: '8px',
       width: 'fit-content',
-      padding: '0 2px'
+      padding: '0 2px',
+      marginBottom: '20px',
     }}>
       {deps[0].loadingMethods.map(item => (
         <Button key={item.id} sx={{
