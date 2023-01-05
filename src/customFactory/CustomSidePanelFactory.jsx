@@ -14,25 +14,25 @@ function CustomSidePanelFactory(...deps) {
     panels: [
       {
         id: 'layer',
-        label: 'sidebar.panels.layer',
+        label: 'layer',
         onClick: null,
         component: deps[4]
       },
       {
         id: 'filter',
-        label: 'sidebar.panels.filter',
+        label: 'filter',
         onClick: null,
         component: deps[5]
       },
       {
         id: 'interaction',
-        label: 'sidebar.panels.interaction',
+        label: 'interaction',
         onClick: null,
         component: deps[6]
       },
       {
         id: 'map',
-        label: 'sidebar.panels.basemap',
+        label: 'basemap',
         onClick: null,
         component: deps[7],
       },

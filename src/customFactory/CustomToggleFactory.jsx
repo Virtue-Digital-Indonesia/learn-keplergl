@@ -27,7 +27,7 @@ const CustomPanelToggle = (...deps) => {
             sx={{ color: 'white', fontSize: '10px', padding: '4px 12px', minWidth: '40px' }}
             key={panelItem.id}
             onClick={() => deps[0].togglePanel(panelItem.id)}
-            label={panelItem.label.replace('sidebar.panels.', '')}
+            label={panelItem.label}
             {...a11yProps(index)}
           />
         ))}

@@ -155,7 +155,7 @@ const CustomLoadDataModalFactory = (...deps) => {
     loadingMethods: [
       {
         id: LOADING_METHODS.upload,
-        label: 'modal.loadData.upload',
+        label: 'Upload File',
         elementType: deps[1]
       },
       {

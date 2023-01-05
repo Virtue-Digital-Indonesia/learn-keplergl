@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import theme from '../utils/theme'
-import { injectComponents, CustomPanelsFactory, PanelToggleFactory, SidePanelFactory, PanelHeaderFactory, LoadDataModalFactory } from 'kepler.gl/components'
+import { injectComponents, CustomPanelsFactory, PanelToggleFactory, SidePanelFactory, PanelHeaderFactory, LoadDataModalFactory, ModalTabsFactory } from 'kepler.gl/components'
 import CustomPanelToggleFactory from '../customFactory/CustomToggleFactory'
 import CustomizePanelsFactory from '../customFactory/CustomizePanelsFactory'
 import CustomSidePanelFactory from '../customFactory/CustomSidePanelFactory'
 import CustomPanelHeaderFactory from '../customFactory/CustomPanelHeader'
 import CustomLoadDataModalFactory from '../customFactory/CustomLoadDataModalFactory'
+import CustomModalTabFactory from '../customFactory/CustomModalTabFactory'
 
 /**
  * learn more replace custom component https://docs.kepler.gl/docs/api-reference/advanced-usages/replace-ui-component
@@ -14,6 +15,7 @@ import CustomLoadDataModalFactory from '../customFactory/CustomLoadDataModalFact
 // Inject custom component into Kepler.gl,
 const KeplerGl = injectComponents([
   [LoadDataModalFactory, CustomLoadDataModalFactory],
+  [ModalTabsFactory, CustomModalTabFactory],
   [SidePanelFactory, CustomSidePanelFactory],
   [PanelHeaderFactory, CustomPanelHeaderFactory],
   [CustomPanelsFactory, CustomizePanelsFactory],
