@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import theme from '../utils/theme'
-import CustomToolbar from '../components/CustomToolbar'
 import { injectComponents, CustomPanelsFactory, PanelToggleFactory, SidePanelFactory, PanelHeaderFactory, LoadDataModalFactory } from 'kepler.gl/components'
 import CustomPanelToggleFactory from '../customFactory/CustomToggleFactory'
 import CustomizePanelsFactory from '../customFactory/CustomizePanelsFactory'
@@ -25,7 +24,6 @@ const Home = () => {
 
   return (
     <>
-      <CustomToolbar />
       <KeplerGl
         id="foo"
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_KEY}

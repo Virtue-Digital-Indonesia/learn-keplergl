@@ -1,5 +1,6 @@
 import React from 'react'
 import {SidePanelFactory} from 'kepler.gl/components'
+import CustomToolbar from '../components/CustomToolbar'
 
 /**
  * reference
@@ -39,7 +40,7 @@ function CustomSidePanelFactory(...deps) {
         id: 'custom',
         label: 'custom',
         onClick: null,
-        component: () => <div style={{ color: 'white' }}>custom toggle content</div>
+        component: () => <CustomToolbar />
       }
     ]
   }
