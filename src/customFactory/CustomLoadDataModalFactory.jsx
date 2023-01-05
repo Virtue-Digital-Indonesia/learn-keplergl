@@ -11,15 +11,18 @@ import { getProcessor } from '../utils'
 import sampleIconCsv, { config as configIconCsv } from '../utils/sampleIconCsv'
 import sampleS2csv, { config as configS2csv } from '../utils/sampleS2csv'
 import sampleSmallGeojson from '../utils/sampleSmallGeojson'
+import { Box, Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 
 const LoadViaURL = () => {
   const dispatch = useDispatch()
   const [loadUrl, setLoadUrl] = useState()
   const [label, setLabel] = useState('')
   const [type, setType] = useState('geojson')
+  const [isLoading, setIsLoading] = useState(false)
 
   const fetchData = async (url) => {
     if(!url || !type || !label) return
+    setIsLoading(true)
     let controller = new AbortController()
     const response = await fetch(url, {
       method: 'GET',
@@ -37,30 +40,56 @@ const LoadViaURL = () => {
         data: getProcessor(type || 'geojson', result),
       }
     }
+    setIsLoading(false)
     dispatch(addDataToMap(params))
     controller.abort()
   }
 
   return(
-    <div>
-      <div style={{ marginBottom: '8px' }}>
-        <input type='text' placeholder='label' onChange={(event) => setLabel(event.target.value)} />
-      </div>
+    <Box>
+      <Box sx={{ marginBottom: '12px' }}>
+        <TextField
+          label='label'
+          size='small'
+          sx={{
+            '& input': {
+              height: '100%'
+            }
+          }}
+          onChange={(event) => setLabel(event.target.value)}
+          fullWidth
+        />
+      </Box>
 
-      <div style={{ marginBottom: '8px' }}>
-        <input type='text' placeholder='https://url' onChange={(event) => setLoadUrl(event.target.value)} />
-      </div>
+      <Box sx={{ marginBottom: '12px' }}>
+        <TextField
+          label='URL'
+          size='small'
+          sx={{
+            '& input': {
+              height: '100%'
+            }
+          }}
+          onChange={(event) => setLoadUrl(event.target.value)}
+          fullWidth
+        />
+      </Box>
 
-      <div style={{ marginBottom: '8px' }}>
-        <select onChange={event => setType(event.target.value)}>
-          <option value='geojson'>geojson</option>
-          <option value='csv'>csv</option>
-          <option value='row'>row</option>
-        </select>
-      </div>
+      <Box sx={{ marginBottom: '12px' }}>
+        <Select fullWidth value={type} size='small' onChange={event => setType(event.target.value)}>
+          <MenuItem value='geojson'>geojson</MenuItem>
+          <MenuItem value='csv'>csv</MenuItem>
+          <MenuItem value='row'>row</MenuItem>
+        </Select>
+      </Box>
 
-      <button onClick={() => fetchData(loadUrl)}>load</button>
-    </div>
+      <Button
+        variant='contained'
+        onClick={() => fetchData(loadUrl)}
+      >
+        {isLoading ? 'loading...' : 'load URL'}
+      </Button>
+    </Box>
   )
 }
 
@@ -82,37 +111,39 @@ const LoadViaSampleData = () => {
   }
 
   return(
-    <div style={{ display: 'flex', flexDirection: 'row', width: '100%', flexWrap: 'wrap' }}>
-      <div style={{ padding: '8px', width: '25%' }}>
-        <h3>Example point evidence</h3>
-        <button onClick={() => handleOnClick('evidence', 'evidence', exDataEvidence, null)}>try sample</button>
-      </div>
+    <Stack direction='row' flexWrap='wrap'>
+      <Box sx={{ padding: '8px', width: '25%' }}>
+        <Typography sx={{ marginBottom: '8px' }}>Example point evidence</Typography>
+        <Button variant='contained' size='small' onClick={() => handleOnClick('evidence', 'evidence', exDataEvidence, null)}>
+          try sample
+        </Button>
+      </Box>
 
-      <div style={{ padding: '8px', width: '25%' }}>
-        <h3>Sample trip data</h3>
-        <button onClick={() => handleOnClick('tripdata', 'tripdata', sampleTripData, 'geojson')}>try sample</button>
-      </div>
+      <Box sx={{ padding: '8px', width: '25%' }}>
+        <Typography sx={{ marginBottom: '8px' }}>Sample trip data</Typography>
+        <Button variant='contained' size='small' onClick={() => handleOnClick('tripdata', 'tripdata', sampleTripData, 'geojson')}>try sample</Button>
+      </Box>
 
-      <div style={{ padding: '8px', width: '25%' }}>
-        <h3>Sample gps data</h3>
-        <button onClick={() => handleOnClick('gps', 'gps', sampleGpsData, 'csv')}>try sample</button>
-      </div>
+      <Box sx={{ padding: '8px', width: '25%' }}>
+        <Typography sx={{ marginBottom: '8px' }}>Sample gps data</Typography>
+        <Button variant='contained' size='small' onClick={() => handleOnClick('gps', 'gps', sampleGpsData, 'csv')}>try sample</Button>
+      </Box>
 
-      <div style={{ padding: '8px', width: '25%' }}>
-        <h3>Sample icon csv data</h3>
-        <button onClick={() => handleOnClick('iconcsv', 'iconcsv', sampleIconCsv, 'csv', configIconCsv)}>try sample</button>
-      </div>
+      <Box sx={{ padding: '8px', width: '25%' }}>
+        <Typography sx={{ marginBottom: '8px' }}>Sample icon csv data</Typography>
+        <Button variant='contained' size='small' onClick={() => handleOnClick('iconcsv', 'iconcsv', sampleIconCsv, 'csv', configIconCsv)}>try sample</Button>
+      </Box>
 
-      <div style={{ padding: '8px', width: '25%' }}>
-        <h3>Sample s2 data</h3>
-        <button onClick={() => handleOnClick('s2csv', 's2csv', sampleS2csv, 'csv', configS2csv)}>try sample</button>
-      </div>
+      <Box sx={{ padding: '8px', width: '25%' }}>
+        <Typography sx={{ marginBottom: '8px' }}>Sample s2 data</Typography>
+        <Button variant='contained' size='small' onClick={() => handleOnClick('s2csv', 's2csv', sampleS2csv, 'csv', configS2csv)}>try sample</Button>
+      </Box>
 
-      <div style={{ padding: '8px', width: '25%' }}>
-        <h3>Sample small geojson data</h3>
-        <button onClick={() => handleOnClick('smallgeo', 'smallgeo', sampleSmallGeojson, 'geojson')}>try sample</button>
-      </div>
-    </div>
+      <Box sx={{ padding: '8px', width: '25%' }}>
+        <Typography sx={{ marginBottom: '8px' }}>Sample small geojson data</Typography>
+        <Button variant='contained' size='small' onClick={() => handleOnClick('smallgeo', 'smallgeo', sampleSmallGeojson, 'geojson')}>try sample</Button>
+      </Box>
+    </Stack>
   )
 }
 
