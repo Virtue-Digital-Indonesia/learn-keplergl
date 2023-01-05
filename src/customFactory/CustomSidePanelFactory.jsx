@@ -33,11 +33,11 @@ function CustomSidePanelFactory(...deps) {
         id: 'map',
         label: 'sidebar.panels.basemap',
         onClick: null,
-        component: deps[7]
+        component: deps[7],
       },
       {
         id: 'custom',
-        label: 'custom toggle tab',
+        label: 'custom',
         onClick: null,
         component: () => <div style={{ color: 'white' }}>custom toggle content</div>
       }
