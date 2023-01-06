@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { LoadDataModalFactory } from 'kepler.gl/components'
 import { LOADING_METHODS } from 'kepler.gl/dist/constants/default-settings'
 import { useDispatch } from 'react-redux'
@@ -13,12 +14,146 @@ import sampleS2csv, { config as configS2csv } from '../utils/sampleS2csv'
 import sampleSmallGeojson from '../utils/sampleSmallGeojson'
 import { Box, Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 
+const BottomAction = ({ onClickAdd }) => {
+  return(
+    <Stack sx={{ marginTop: '20px'}}>
+      <Button onClick={onClickAdd} variant='contained'>Add Data</Button>
+    </Stack>
+  )
+}
+
+const LoadFileDrop = () => {
+  const dispatch = useDispatch()
+  const [dragActive, setDragActive] = useState()
+  const [datasets, setDatasets] = useState([])
+  const inputRef = useRef(null)
+
+  const handleDrag = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[e.dataTransfer.files.length-1]
+
+      const result = await file.text()
+      const getType = file?.type?.split('/')[1] || file.name.split('.')[1]
+
+      const params = {
+        info: {
+          id: file.name,
+          label: file.name
+        },
+        data: getProcessor(getType, (getType === 'geojson' || getType === 'json') ? JSON.parse(result) : result)
+      }
+      setDatasets([...datasets, params])
+    }
+  }
+
+  const handleInputChange = async (e) => {
+    e.preventDefault()
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[e.target.files.length-1]
+      const result = await file.text()
+      const getType = file?.type?.split('/')[1] || file.name.split('.')[1]
+      
+      const params = {
+        info: {
+          id: file.name,
+          label: file.name
+        },
+        data: getProcessor(getType, (getType === 'geojson' || getType === 'json') ? JSON.parse(result) : result)
+      }
+      setDatasets([...datasets, params])
+    }
+  }
+
+  return(
+    <Stack>
+      <Typography sx={{
+        marginBottom: '12px',
+      }}>Add one or more files to the map. Supported formats include CSV, JSON, and GeoJSON.</Typography>
+      
+      <Box onDragEnter={handleDrag} component='form' sx={{
+        width: '100%',
+        height: '200px',
+        textAlign: 'center',
+        position: 'relative',
+      }} onSubmit={e => e.preventDefault()}>
+        <input ref={inputRef} onChange={(e) => handleInputChange(e)} type='file' id='input-file-upload' multiple={true} style={{ display: 'none' }} />
+        <label id='label-file-upload' htmlFor='input-file-upload' style={{
+          height: '100%',
+          display: 'flex',
+          border: '1px dashed #DB9CFF',
+          padding: '16px',
+          borderRadius: '8px',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: dragActive ? '#F9EDFF' : 'white'
+        }}>
+          {dragActive && (
+            <Box sx={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              borderRadius: '8px',
+              top: '0px',
+              right: '0px',
+              bottom: '0px',
+              left: '0px',
+            }} id='drag-file-element' onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={e => handleDrop(e)}></Box>
+          )}
+          <Box>
+            <Typography>Drag and drop your file here or</Typography>
+            <Button onClick={() => inputRef.current.click()} className='upload-button'>Browser</Button>
+          </Box> 
+        </label>
+      </Box>
+
+      <Stack direction='row' flexWrap='wrap' marginTop='20px'>
+        {datasets.map(item => (
+          <Box key={item.id} sx={{
+            width: '33.33%',
+            paddingBottom: '12px',
+            padding: '4px'
+          }}>
+            <Box sx={{
+              border: '1px dashed #DB9CFF',
+              padding: '16px',
+              borderRadius: '8px',
+            }}>
+              <Typography noWrap>{item.info.label}</Typography>
+            </Box>
+          </Box>
+        ))}
+      </Stack>
+
+      <BottomAction
+        onClickAdd={() => dispatch(addDataToMap({
+          datasets,
+        }))}
+      />
+    </Stack>
+  )
+}
+
 const LoadViaURL = () => {
   const dispatch = useDispatch()
   const [loadUrl, setLoadUrl] = useState()
   const [label, setLabel] = useState('')
   const [type, setType] = useState('geojson')
   const [isLoading, setIsLoading] = useState(false)
+  const [datasets, setDatasets] = useState([])
 
   const fetchData = async (url) => {
     if(!url || !type || !label) return
@@ -31,17 +166,15 @@ const LoadViaURL = () => {
 
     const result = type === 'csv' ? await response.text() : await response.json()
 
-    const params = {
-      datasets: {
-        info: {
-          label,
-          id: label,
-        },
-        data: getProcessor(type || 'geojson', result),
-      }
-    }
     setIsLoading(false)
-    dispatch(addDataToMap(params))
+    setDatasets([...datasets, {
+      info: {
+        label, id: label,
+      },
+      data: getProcessor(type || 'geojson', result),
+    }])
+    setLoadUrl('')
+    setLabel('')
     controller.abort()
   }
 
@@ -58,6 +191,7 @@ const LoadViaURL = () => {
           }}
           onChange={(event) => setLabel(event.target.value)}
           fullWidth
+          value={label}
         />
       </Box>
 
@@ -72,6 +206,7 @@ const LoadViaURL = () => {
           }}
           onChange={(event) => setLoadUrl(event.target.value)}
           fullWidth
+          value={loadUrl}
         />
       </Box>
 
@@ -89,6 +224,30 @@ const LoadViaURL = () => {
       >
         {isLoading ? 'loading...' : 'load URL'}
       </Button>
+
+      <Stack direction='row' flexWrap='wrap' marginTop='20px'>
+        {datasets.map(item => (
+          <Box key={item.id} sx={{
+            width: '33.33%',
+            paddingBottom: '12px',
+            padding: '4px'
+          }}>
+            <Box sx={{
+              border: '1px dashed #DB9CFF',
+              padding: '16px',
+              borderRadius: '8px',
+            }}>
+              <Typography noWrap>{item.info.label}</Typography>
+            </Box>
+          </Box>
+        ))}
+      </Stack>
+
+      <BottomAction
+        onClickAdd={() => dispatch(addDataToMap({
+          datasets,
+        }))}
+      />
     </Box>
   )
 }
@@ -156,7 +315,7 @@ const CustomLoadDataModalFactory = (...deps) => {
       {
         id: LOADING_METHODS.upload,
         label: 'Upload File',
-        elementType: deps[1]
+        elementType: props => <LoadFileDrop {...props} /> // deps[1]
       },
       {
         id: 'viaurl',
