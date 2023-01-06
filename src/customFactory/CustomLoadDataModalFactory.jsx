@@ -13,6 +13,7 @@ import sampleIconCsv, { config as configIconCsv } from '../utils/sampleIconCsv'
 import sampleS2csv, { config as configS2csv } from '../utils/sampleS2csv'
 import sampleSmallGeojson from '../utils/sampleSmallGeojson'
 import { Box, Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
+import JSZip from 'jszip'
 
 const BottomAction = ({ onClickAdd }) => {
   return(
@@ -38,25 +39,52 @@ const LoadFileDrop = () => {
     }
   }
 
+  const convertToRealData = (label, id, type, resultInText) => {
+    return {
+      info: { id, label, },
+      data: getProcessor(type, (type === 'geojson' || type === 'json') ? JSON.parse(resultInText) : resultInText)
+    }
+  }
+
   const handleDrop = async (e) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const zip = new JSZip()
       const file = e.dataTransfer.files[e.dataTransfer.files.length-1]
-
-      const result = await file.text()
       const getType = file?.type?.split('/')[1] || file.name.split('.')[1]
 
-      const params = {
-        info: {
-          id: file.name,
-          label: file.name
-        },
-        data: getProcessor(getType, (getType === 'geojson' || getType === 'json') ? JSON.parse(result) : result)
+      if (getType === 'zip') {
+        zip.loadAsync(file)
+          .then(async zipFiles => {
+            let result = []
+            for(let key of Object.keys(zipFiles.files)) {
+              result.push({
+                name: zipFiles.files[key].name,
+                text: await zipFiles.files[key].async('text')
+              })
+            }
+
+            return result
+          })
+          .then(result => {
+            let temp = result.map(item => convertToRealData(
+              item.name,
+              item.name,
+              item.name.split('.')[1],
+              item.text
+            ))
+            setDatasets([...datasets, ...temp])
+          })
+      } else {
+        const resultInText = await file.text()
+        setDatasets([
+          ...datasets,
+          convertToRealData(file.name, file.name, getType, resultInText)
+        ])
       }
-      setDatasets([...datasets, params])
     }
   }
 
@@ -82,7 +110,7 @@ const LoadFileDrop = () => {
     <Stack>
       <Typography sx={{
         marginBottom: '12px',
-      }}>Add one or more files to the map. Supported formats include CSV, JSON, and GeoJSON.</Typography>
+      }}>Add one or more files to the map. Supported formats include CSV, JSON, and GeoJSON. Those format can be packaged in zip format.</Typography>
       
       <Box onDragEnter={handleDrag} component='form' sx={{
         width: '100%',
